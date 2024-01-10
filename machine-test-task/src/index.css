@@ -111,7 +111,6 @@ input{
 }
 
 .login-input.filled {
-  /* Add styles for the filled state (e.g., green color) */
   background-color: green;
   color: white;
 }
@@ -295,3 +294,8 @@ span {
   color: #000;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

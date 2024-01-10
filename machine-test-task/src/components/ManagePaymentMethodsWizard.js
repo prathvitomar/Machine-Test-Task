@@ -18,7 +18,8 @@ const ManagePaymentMethodsWizard = () => {
   const [showThanksForVisitingModal, setShowThanksForVisitingModal] = useState(false);
 
 
-  const handlePay = () => {
+  const handlePay = (e) => {
+    e.preventDefault();
     if (creditCardNumber && billingZip && zipPortal && cvc && month && year) {
       setShowProceedModal(true);
     } else {
@@ -27,10 +28,22 @@ const ManagePaymentMethodsWizard = () => {
   };
   
 
+  // const handleProceed = () => {
+  //   setShowConfirmationModal(true);
+  //   clearFields();
+  // };
+
+
   const handleProceed = () => {
-    setShowConfirmationModal(true);
-    clearFields();
+    if (creditCardNumber && billingZip && zipPortal && cvc && month && year) {
+      alert('Form successfully submitted');
+      setShowConfirmationModal(true);
+      clearFields();
+    } else {
+      console.log("Please fill in all fields before proceeding.");
+    }
   };
+  
 
   const handleDeny = () => {
     setShowDenyModal(true);
@@ -85,9 +98,10 @@ const ManagePaymentMethodsWizard = () => {
   
 
   return (
+    <>
     <div className='manage-payment'>
       <h1>Manage Payment Methods Wizard</h1>
-      <input
+      {/* <input
       className='signup-input'
         type="text"
         placeholder="Credit Card Number"
@@ -124,7 +138,56 @@ const ManagePaymentMethodsWizard = () => {
         value={year}
         onChange={(e) => setYear(e.target.value)}
       />
-      <button className='in-button' onClick={handlePay}>Pay</button>
+      <button className='in-button' onClick={handlePay}>Pay</button> */}
+
+
+    <form onSubmit={handlePay}>
+          <input
+            className='signup-input'
+            type='text'
+            placeholder='Credit Card Number'
+            value={creditCardNumber}
+            onChange={(e) => setCreditCardNumber(e.target.value)}
+          />
+          <input
+            className='signup-input'
+            type='text'
+            placeholder='Billing Zip'
+            value={billingZip}
+            onChange={(e) => setBillingZip(e.target.value)}
+          />
+          <input
+            className='signup-input'
+            type='text'
+            placeholder='Zip Portal'
+            value={zipPortal}
+            onChange={(e) => setZipPortal(e.target.value)}
+          />
+          <input
+            className='signup-input'
+            type='text'
+            placeholder='CVC'
+            value={cvc}
+            onChange={(e) => setCvc(e.target.value)}
+          />
+          <input
+            className='signup-input'
+            type='text'
+            placeholder='Month'
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+          />
+          <input
+            className='signup-input'
+            type='text'
+            placeholder='Year'
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+          />
+          <button className='in-button' type='submit'>
+            Pay
+          </button>
+      </form>
 
       {/* Fee Modal */}
       {showFeeModal && (
@@ -194,8 +257,8 @@ const ManagePaymentMethodsWizard = () => {
       </div>
     </div>
   )}
-
     </div>
+    </>
   );
 };
 
