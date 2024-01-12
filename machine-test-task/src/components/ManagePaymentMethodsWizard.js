@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -16,25 +17,53 @@ const ManagePaymentMethodsWizard = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showCancelConfirmationModal, setShowCancelConfirmationModal] = useState(false);
   const [showThanksForVisitingModal, setShowThanksForVisitingModal] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [commission, setCommission] = useState(0);
 
 
-  const handlePay = (e) => {
+  const handlePay = async (e) => {
     e.preventDefault();
     if (creditCardNumber && billingZip && zipPortal && cvc && month && year) {
-      setShowProceedModal(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/pay', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            creditCardNumber,
+            billingZip,
+            zipPortal,
+            cvc,
+            month,
+            year,
+          }),
+        });
+  
+        const data = await response.json();
+  
+        if (data.success) {
+          setTotalAmount(data.totalAmount);
+          setCommission(data.commission);
+          setShowProceedModal(true);
+        } else {
+          console.log(data.message);
+        }
+      } catch (error) {
+        console.error('Error processing payment:', error);
+      }
     } else {
-      console.log("Please fill in all fields before proceeding.");
+      console.log('Please fill in all fields before proceeding.');
     }
   };
-  
 
-  // const handleProceed = () => {
-  //   setShowConfirmationModal(true);
-  //   clearFields();
-  // };
+  
 
 
   const handleProceed = () => {
+    console.log('Proceeding with payment details:');
+    console.log('Total Amount:', totalAmount);
+    console.log('Commission:', commission);
     if (creditCardNumber && billingZip && zipPortal && cvc && month && year) {
       alert('Form successfully submitted');
       setShowConfirmationModal(true);
@@ -42,7 +71,10 @@ const ManagePaymentMethodsWizard = () => {
     } else {
       console.log("Please fill in all fields before proceeding.");
     }
+    setShowProceedModal(false);
   };
+
+
   
 
   const handleDeny = () => {
@@ -101,57 +133,17 @@ const ManagePaymentMethodsWizard = () => {
     <>
     <div className='manage-payment'>
       <h1>Manage Payment Methods Wizard</h1>
-      {/* <input
-      className='signup-input'
-        type="text"
-        placeholder="Credit Card Number"
-        value={creditCardNumber}
-        onChange={(e) => setCreditCardNumber(e.target.value)}
-      />
-      <input className='signup-input'
-        type="text"
-        placeholder="Billing Zip"
-        value={billingZip}
-        onChange={(e) => setBillingZip(e.target.value)}
-      />
-      <input className='signup-input'
-        type="text"
-        placeholder="Zip Portal"
-        value={zipPortal}
-        onChange={(e) => setZipPortal(e.target.value)}
-      />
-      <input className='signup-input'
-        type="text"
-        placeholder="CVC"
-        value={cvc}
-        onChange={(e) => setCvc(e.target.value)}
-      />
-      <input className='signup-input'
-        type="text"
-        placeholder="Month"
-        value={month}
-        onChange={(e) => setMonth(e.target.value)}
-      />
-      <input className='signup-input'
-        type="text"
-        placeholder="Year"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-      />
-      <button className='in-button' onClick={handlePay}>Pay</button> */}
-
-
     <form onSubmit={handlePay}>
           <input
             className='signup-input'
-            type='text'
+            type='number'
             placeholder='Credit Card Number'
             value={creditCardNumber}
             onChange={(e) => setCreditCardNumber(e.target.value)}
           />
           <input
             className='signup-input'
-            type='text'
+            type='number'
             placeholder='Billing Zip'
             value={billingZip}
             onChange={(e) => setBillingZip(e.target.value)}
@@ -172,17 +164,20 @@ const ManagePaymentMethodsWizard = () => {
           />
           <input
             className='signup-input'
-            type='text'
+            type='number'
             placeholder='Month'
             value={month}
             onChange={(e) => setMonth(e.target.value)}
           />
           <input
+            maxLength='4'
             className='signup-input'
-            type='text'
-            placeholder='Year'
+            pattern="\d*"
+            type='number'
+            placeholder='YYYY'
             value={year}
             onChange={(e) => setYear(e.target.value)}
+            inputMode="numeric"
           />
           <button className='in-button' type='submit'>
             Pay
@@ -263,3 +258,86 @@ const ManagePaymentMethodsWizard = () => {
 };
 
 export default ManagePaymentMethodsWizard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // const handlePay = () => {
+  //   if (creditCardNumber && billingZip && zipPortal && cvc && month && year) {
+  //         setShowProceedModal(true);
+  //     // setShowFeeModal(true);
+  //   } else {
+  //     console.log("Please fill in all fields before proceeding.");
+  //   }
+  // };
+
+
+
+
+
+  
+  // const handleProceed = async () => {
+  //   if (creditCardNumber && billingZip && zipPortal && cvc && month && year) {
+  //     try {
+  //       const response = await axios.post('http://localhost:5000/api/pay', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           creditCardNumber,
+  //           billingZip,
+  //           zipPortal,
+  //           cvc,
+  //           month,
+  //           year,
+  //         }),
+  //       });
+  
+  //       const data = await response.json();
+  
+  //       if (data.success) {
+  //         setTotalAmount(data.totalAmount);
+  //         setCommission(data.commission);
+  //         setShowConfirmationModal(true);
+  //         clearFields();
+  //       } else {
+  //         console.log(data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error processing payment:', error);
+  //     }
+  //   } else {
+  //     console.log('Please fill in all fields before proceeding.');
+  //   }
+  // };
+  
